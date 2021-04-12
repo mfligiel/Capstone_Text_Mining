@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Apr  1 11:07:14 2021
-
 @author: zjafri
-
 This code creates a function generate a list of topic probabilities using Latent Direchlet Allocation (LDA) for a given list of keywords and number of topics selected. The ouput is an nxp-1 array for n keywords and p number of topics given. Optional parmeters are provided for LDA.
-
 """
 
 # Define function to clean text
@@ -39,17 +36,18 @@ def clean_text(text):
 
 
 # Define function to load keywords
-def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extremes_no_above = 1, chunksize = 2000, iterations = 50, passes = 3, eval_every = None, random_state = 42):
+def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extremes_no_above = 1, output_visual = False, chunksize = 2000, iterations = 50, passes = 3, eval_every = None, random_state = 42):
     
     """
     
-
     Parameters
     ----------
     data : list object
         A list of keywords
     num_topics : int
         The number of desired topics for the LDA algorithm.
+    output_visual: bool
+        Generates a visual output for the LDA algorithm Default value is False.
     filter_extremes_no_below : int
         The minimum number of instances for a token within the dictionary to be considered for topic modeling. Default value of 0.
     filter_extermes_no_above : float
@@ -64,13 +62,10 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
          Log perplexity is estimated every that many updates. Setting this to one slows down training by ~2x. Default value of None.
     random_state: int
         Either a randomState object or a seed to generate one. Useful for reproducibility. Default value of 42.
-
     Returns
     -------
-    An nxp-1 array where n is the number of keywords in the list and p is the number of topics selected. P-1 dimensions are returned as one dimension of p is dropped to eliminate multicolinearity amongst the features. Text cleaning steps are applied to the keywords, including the removal of special characters, stopwords, and lemmatization.
+    If output_visual is set to False then an nxp-1 array where n is the number of keywords in the list and p is the number of topics selected. P-1 dimensions are returned as one dimension of p is dropped to eliminate multicolinearity amongst the features. Text cleaning steps are applied to the keywords, including the removal of special characters, stopwords, and lemmatization. If output_visual is set to True, then a pyLDAvis object visualizing the LDA results.
     
-
-
     """
     
     # Check if data is a list
@@ -82,7 +77,8 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
         from gensim.models import LdaMulticore
         import multiprocessing
         import numpy as np
-        import pandas as pd
+#        import pandas as pd
+
         
         # Create list of clean keywords
         keywords_clean = list(map(clean_text, data))
@@ -135,7 +131,25 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
         # Reshape
         probs = probs.reshape((len(lda_documents), num_topics))
         
-        # Convert to dataframe
-        df_probs = pd.DataFrame(probs)
-        df_probs = df_probs.iloc[:, 1:]
-        return probs[:, 1:]
+#        # Convert to dataframe
+#        df_probs = pd.DataFrame(probs)
+#        df_probs = df_probs.iloc[:, 1:]
+        
+        # Save result
+        topic_model_result = probs[:, 1:]
+              
+        if output_visual == False:
+            
+            return topic_model_result
+        
+        else:
+                       
+            import pyLDAvis.gensim
+            import warnings
+            
+            # Suppress warnings from pyLDAvis
+            warnings.filterwarnings('ignore', category = DeprecationWarning)
+            
+            # Create visualization for LDA Model
+            topic_model_visual = pyLDAvis.gensim.prepare(ldamodel, doc_term_matrix, dictionary, sort_topics = False, mds = 'mmds')
+            return pyLDAvis.display(topic_model_visual)
