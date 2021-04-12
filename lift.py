@@ -1,4 +1,4 @@
-def lift(data,  todrop, y_var, othervars, test_data=None, model_args=None, top_perc = .2, fn = lambda x: x ):
+def lift(data,  todrop, y_var, othervars, test_data=None, model_args=None, top_perc = .2, fn = lambda x: x , full_model=None):
     """
     
 
@@ -20,6 +20,8 @@ def lift(data,  todrop, y_var, othervars, test_data=None, model_args=None, top_p
         Default .2, Between 0 and 1.  The proportion of top results used to compare, as this will do regression.
     function : function
         Optional function to apply.
+    full_model:
+        A full model that can be passed it, so it doesn't need to be retrained
 
     Returns
     -------
@@ -28,22 +30,29 @@ def lift(data,  todrop, y_var, othervars, test_data=None, model_args=None, top_p
     """
     assert top_perc <= 1
     assert top_perc > 0
-    data = data.copy()
-    data.drop(todrop, inplace=True, axis=1)
+    datafr = data.copy()
+    datafr.drop(todrop, inplace=True, axis=1)
     #print(data.head())
     ### FULL MODEL
-    if model_args:
-      rf_full = RandomForestRegressor(**model_args, verbosee=1)
+    if full_model is not None:
+      rf_full = full_model
     else:
-      rf_full = RandomForestRegressor(verbose=1)
-    print('fitting full model...')
-    rf_full.fit(X=data.drop(y_var, axis=1), y=data[y_var])
+      if model_args is not None:
+        rf_full = RandomForestRegressor(**model_args, verbose=1)
+        print('fitting full model...')
+        rf_full.fit(X=datafr.drop(y_var, axis=1), y=datafr[y_var])
+      else:
+        rf_full = RandomForestRegressor(verbose=1)
+        print('fitting full model...')
+        rf_full.fit(X=datafr.drop(y_var, axis=1), y=datafr[y_var])
     if test_data:
-      y_pred_full = rf_full.predict(test_data.drop(y_var, axis=1))
+      test_datafr = test_data.copy()
+      test_datafr.drop(todrop, inplace=True, axis=1)
+      y_pred_full = rf_full.predict(test_datafr.drop(y_var, axis=1))
       y_act = test_data[y_var]
     else:
-      y_pred_full = rf_full.predict(data.drop(y_var, axis=1))
-      y_act = data[y_var]
+      y_pred_full = rf_full.predict(datafr.drop(y_var, axis=1))
+      y_act = datafr[y_var]
     #top Xth percentile predicted actual:
     outpt_full = pd.DataFrame(np.vstack([y_pred_full, y_act]).T, columns = ['pred', 'act'])
     #get the 'line' for which we are in the top_perc percent based on predictive
@@ -59,11 +68,11 @@ def lift(data,  todrop, y_var, othervars, test_data=None, model_args=None, top_p
     else:
       rf_base = RandomForestRegressor(verbose=1)
     print('fitting base...')
-    rf_base.fit(X=data.drop(y_var, axis=1).drop(othervars, axis=1), y=data[y_var])
+    rf_base.fit(X=datafr.drop(y_var, axis=1).drop(othervars, axis=1), y=data[y_var])
     if test_data:
-      y_pred_base = rf_base.predict(test_data.drop(y_var, axis=1).drop(othervars, axis=1))
+      y_pred_base = rf_base.predict(test_datafr.drop(y_var, axis=1).drop(othervars, axis=1))
     else:
-      y_pred_base = rf_base.predict(data.drop(y_var, axis=1).drop(othervars, axis=1))
+      y_pred_base = rf_base.predict(datafr.drop(y_var, axis=1).drop(othervars, axis=1))
     #top Xth percentile predicted actual:
     outpt_base = pd.DataFrame(np.vstack([y_pred_base, y_act]).T, columns = ['pred', 'act'])
     #get the 'line' for which we are in the top_perc percent based on predictive
@@ -76,3 +85,5 @@ def lift(data,  todrop, y_var, othervars, test_data=None, model_args=None, top_p
     print("Full Model Outcome Count:", str(sum_full))
     print("Base Model Outcome Count:", str(sum_base))
     print("The final lift is:", sum_full/sum_base*100 - 100,  "%")
+
+
