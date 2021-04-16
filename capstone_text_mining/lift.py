@@ -1,3 +1,9 @@
+#standard imports
+import pandas as pd
+import numpy as np
+from sklearn import metrics
+from sklearn.ensemble import RandomForestRegressor
+
 def lift(data,  todrop, y_var, othervars, test_data=None, model_args=None, top_perc = .2, fn = lambda x: x , full_model=None):
     """
     
