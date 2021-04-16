@@ -16,7 +16,14 @@ LONG_DESC_TYPE = "text/markdown"
 
 INSTALL_REQUIRES = [
       'numpy',
-      'pandas'
+      'pandas',
+      'seaborn',
+      'tqdm',
+      'sklearn',
+      'multiprocessing',
+      'string',
+      'nltk',
+      'vaderSentiment'
 ]
 
 setup(name=PACKAGE_NAME,
