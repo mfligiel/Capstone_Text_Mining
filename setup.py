@@ -14,6 +14,7 @@ DESCRIPTION = 'Capstone Text Mining Techniques'
 LONG_DESCRIPTION = (HERE / "README.md").read_text()
 LONG_DESC_TYPE = "text/markdown"
 
+#this installation doesn'thave the packages needed for carmin and zain's pieces yet.
 INSTALL_REQUIRES = [
       'numpy',
       'pandas',
@@ -21,7 +22,8 @@ INSTALL_REQUIRES = [
       'tqdm',
       'sklearn',
       'nltk',
-      'vaderSentiment'
+      'vaderSentiment',
+      'spacy'
 ]
 
 setup(name=PACKAGE_NAME,
