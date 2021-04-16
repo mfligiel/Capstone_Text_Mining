@@ -20,8 +20,6 @@ INSTALL_REQUIRES = [
       'seaborn',
       'tqdm',
       'sklearn',
-      'multiprocessing',
-      'string',
       'nltk',
       'vaderSentiment'
 ]
