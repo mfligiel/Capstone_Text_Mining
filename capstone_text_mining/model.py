@@ -1,3 +1,18 @@
+#standard imports
+import pandas as pd
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.preprocessing import MultiLabelBinarizer
+
 def model(data, y_var, categorical = False, grid_search = False,\
           return_model=False, keywordvar = None):
     """
