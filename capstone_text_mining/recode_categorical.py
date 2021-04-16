@@ -1,3 +1,7 @@
+#standard imports
+import pandas as pd
+import numpy as np
+
 def recode_categorical(data, keywordvar, n_variables_max=5, perc_count = 0.05):
     """
     
