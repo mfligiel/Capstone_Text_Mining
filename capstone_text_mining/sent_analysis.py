@@ -1,5 +1,9 @@
-#function
+#standard imports
+import pandas as pd
+import numpy as np
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer 
 
+#function
 def sent_analysis(data, keywordvar):
     """
     
