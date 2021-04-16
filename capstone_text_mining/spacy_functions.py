@@ -1,3 +1,16 @@
+#standard imports
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import re
+import string
+from tqdm import tqdm #for seeing loop progress
+import spacy
+from sklearn.preprocessing import MultiLabelBinarizer
+from tqdm import tqdm
+tqdm.pandas()
+
+
 #Spacy Helper Functions for POS, dependencies, entity label types respectively
 def nlp_xtrct_pos(string, nlp):
   vv = nlp(str(string))
