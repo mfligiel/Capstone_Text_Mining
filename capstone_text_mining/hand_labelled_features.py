@@ -5,6 +5,9 @@ Created on Sat Apr 10 14:35:11 2021
 
 @author: zjafri
 """
+# Import packages
+from snorkel.labeling import labeling_function
+
 
 def hand_label(data, label):
 
@@ -25,9 +28,6 @@ def hand_label(data, label):
     # Assert data is a list of tokens
     assert isinstance(data, list) == True, 'Data must be a list of string tokens!'  
     
-    # Import required snorkel package 
-    from snorkel.labeling import labeling_function
-
     # Define labeling function
     @labeling_function()
     def lf_contains(keyword):
