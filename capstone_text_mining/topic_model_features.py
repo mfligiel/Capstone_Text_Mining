@@ -5,19 +5,30 @@ Created on Thu Apr  1 11:07:14 2021
 @author: zjafri
 This code creates a function generate a list of topic probabilities using Latent Direchlet Allocation (LDA) for a given list of keywords and number of topics selected. The ouput is an nxp-1 array for n keywords and p number of topics given. Optional parmeters are provided for LDA.
 """
+# Import packages
+import re
+import nltk as nltk
+import string as string
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
+from gensim import corpora
+from gensim.models import LdaMulticore
+import multiprocessing
+import numpy as np
+import pyLDAvis.gensim
+import warnings
+
+
+# Install corpus    
+nltk.download('stopwords', quiet = True)
+nltk.download('wordnet', quiet = True)
+nltk.download('punkt', quiet = True)
+
+
 
 # Define function to clean text
 def clean_text(text):
-    import re
-    import nltk as nltk
-    import string as string
-    from nltk.tokenize import word_tokenize
-    from nltk.corpus import stopwords
-    from nltk.stem.wordnet import WordNetLemmatizer
-    
-    nltk.download('stopwords', quiet = True)
-    nltk.download('wordnet', quiet = True)
-    nltk.download('punkt', quiet = True)
     stop_words = set(stopwords.words('english'))
     
     exclude = set(string.punctuation)
@@ -64,7 +75,7 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
         Either a randomState object or a seed to generate one. Useful for reproducibility. Default value of 42.
     Returns
     -------
-    If output_visual is set to False then an nxp-1 array where n is the number of keywords in the list and p is the number of topics selected. P-1 dimensions are returned as one dimension of p is dropped to eliminate multicolinearity amongst the features. Text cleaning steps are applied to the keywords, including the removal of special characters, stopwords, and lemmatization. If output_visual is set to True, then a pyLDAvis object visualizing the LDA results.
+    If output_visual is set to False then an nxp-1 array where n is the number of keywords in the list and p is the number of topics selected. P-1 dimensions are returned as one dimension of p is dropped to eliminate multicolinearity amongst the features. Text cleaning steps are applied to the keywords, including the removal of special characters, stopwords, and lemmatization.
     
     """
     
@@ -73,12 +84,6 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
         print('Data variable must contain a list of keywords!')   
     else:
         
-        from gensim import corpora
-        from gensim.models import LdaMulticore
-        import multiprocessing
-        import numpy as np
-#        import pandas as pd
-
         
         # Create list of clean keywords
         keywords_clean = list(map(clean_text, data))
@@ -131,10 +136,6 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
         # Reshape
         probs = probs.reshape((len(lda_documents), num_topics))
         
-#        # Convert to dataframe
-#        df_probs = pd.DataFrame(probs)
-#        df_probs = df_probs.iloc[:, 1:]
-        
         # Save result
         topic_model_result = probs[:, 1:]
               
@@ -144,8 +145,6 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
         
         else:
                        
-            import pyLDAvis.gensim
-            import warnings
             
             # Suppress warnings from pyLDAvis
             warnings.filterwarnings('ignore', category = DeprecationWarning)
