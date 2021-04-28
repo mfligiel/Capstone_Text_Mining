@@ -1,3 +1,38 @@
+    """
+    Parameters
+    ----------
+    dataframe : dataframe
+        A dataframe of paid search data containing a keyword column and an output metric column
+    keywordcolumn : string
+        Name of column containing keywords as a string
+    metric column : string
+        Name of oclumn contained the outcome metric as a string
+    count: int
+        The number of keywords to use in graph analysis
+
+    Returns
+    -------
+    An object in graph format suitable for additional visualization.    
+  """
+
+# Required packages
+import pandas as pd
+import numpy as np
+import nltk as nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
+import networkx as nx
+from matplotlib import pyplot as plt
+import string
+import tqdm
+import itertools
+
+# Import NLP content/corpuses
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
 def graphprep(dataframe, keywordcolumn, metriccolumn, count):
 
 # Create initial dataframe
@@ -38,7 +73,6 @@ def graphprep(dataframe, keywordcolumn, metriccolumn, count):
   combol = list(combol)
   df_gr=pd.DataFrame(graphdf, columns=['METRIC', 'kw_tokens_clean'])
   df_grl = df_gr.values.tolist()
-  import tqdm
   retlist = []
   for i, j in tqdm.tqdm(combol):
   #pstart=[i,j]
