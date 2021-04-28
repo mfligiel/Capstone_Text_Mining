@@ -34,7 +34,7 @@ def shap_visuals(modelname, sample, keyrow):
     #second, identify the type of model for gathering the features
     modeltype = type(modelname).__name__
     #if random forest, use the fast random forest model
-    if modeltype in 'RandomForestRegressor', 'XGBRegressor', 'GradientBoostingRegressor', 'RandomForestClassifier', 'XGBClassifier', 'GradientBoostingClassifier'):
+    if modeltype in ('RandomForestRegressor', 'XGBRegressor', 'GradientBoostingRegressor', 'RandomForestClassifier', 'XGBClassifier', 'GradientBoostingClassifier'):
        print ("Running explainer.  This takes awhile.  Be patient.")
        explainer =  shap.TreeExplainer(modelname)
     elif modeltype in ('LogisticRegression', "LinearRegression"):
