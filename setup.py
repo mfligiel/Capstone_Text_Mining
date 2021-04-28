@@ -24,6 +24,7 @@ INSTALL_REQUIRES = [
       'nltk',
       'vaderSentiment',
       'spacy',
+      'networkx',
       'gensim',
       'pyLDAvis'
 ]
