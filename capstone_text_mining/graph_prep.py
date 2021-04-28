@@ -1,4 +1,19 @@
-    """
+# Required packages
+import pandas as pd
+import numpy as np
+import nltk as nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem.wordnet import WordNetLemmatizer
+import networkx as nx
+from matplotlib import pyplot as plt
+import string
+import tqdm
+import itertools
+
+
+def graphprep(dataframe, keywordcolumn, metriccolumn, count):
+  """
     Parameters
     ----------
     dataframe : dataframe
@@ -14,26 +29,11 @@
     -------
     An object in graph format suitable for additional visualization.    
   """
-
-# Required packages
-import pandas as pd
-import numpy as np
-import nltk as nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
-import networkx as nx
-from matplotlib import pyplot as plt
-import string
-import tqdm
-import itertools
-
 # Import NLP content/corpuses
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
-def graphprep(dataframe, keywordcolumn, metriccolumn, count):
 
 # Create initial dataframe
   graphdf = pd.DataFrame(dataframe, columns = [keywordcolumn, metriccolumn])
