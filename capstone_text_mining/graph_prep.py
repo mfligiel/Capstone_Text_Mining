@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 import string
 import tqdm
 import itertools
+import re
 
 
 def graphprep(dataframe, keywordcolumn, metriccolumn, count):
@@ -23,24 +24,24 @@ def graphprep(dataframe, keywordcolumn, metriccolumn, count):
     metric column : string
         Name of oclumn contained the outcome metric as a string
     count: int
-        The number of keywords to use in graph analysis
+        The number of keywords to use in graph analysis (used for selecting top x most common words)
 
     Returns
     -------
     An object in graph format suitable for additional visualization.    
   """
-# Import NLP content/corpuses
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+  # Import NLP content/corpuses
+  nltk.download('punkt')
+  nltk.download('stopwords')
+  nltk.download('wordnet')
 
 
-# Create initial dataframe
+  # Create initial dataframe
   graphdf = pd.DataFrame(dataframe, columns = [keywordcolumn, metriccolumn])
   graphdf.columns=['KEYWORD', 'METRIC']
-# Clean tokens - remove stop words and lemmatize
+  # Clean tokens - remove stop words and lemmatize
 
-# Define parameters to clean text
+  # Define parameters to clean text
   stop_words = set(stopwords.words('english'))
 
   exclude = set(string.punctuation)
