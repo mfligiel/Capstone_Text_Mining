@@ -1,5 +1,5 @@
 # CAPSTONE-TEXT-MINING README
-Version 0.0.7
+Version 0.0.8
 
 ## What is it?
 The Capstone-Text-Mining is a Python package developed for a graduate analytics program capstone project for a specific client. The client is a data analytics consulting and software-as-a-service provider with its own Machine Learning Operations (MLOps) Platform. The client specializes in paid search and marketing analytics. 
