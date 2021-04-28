@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '0.0.8'
+VERSION = '0.0.9'
 PACKAGE_NAME = 'capstone_text_mining'
 AUTHOR = 'Matt Fligiel, Carmin Ballou, Zain Jafri'
 AUTHOR_EMAIL = 'matthewfligiel@gmail.com'
@@ -27,7 +27,7 @@ INSTALL_REQUIRES = [
       'spacy',
       'networkx',
       'gensim',
-      'pyLDAvis',
+      'pyLDAvis==2.1.2', #needed for gensim
       'snorkel'
 ]
 
