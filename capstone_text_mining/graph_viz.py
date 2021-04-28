@@ -1,4 +1,22 @@
+
+import networkx as nx
+from matplotlib import pyplot as plt
+
 def graphviz(graph, edgecolor='grey', nodecolor='purple'):
+  """
+    Parameters
+    ----------
+    graph : graph object
+        A graph object prepared by the graphprep function
+    edgecolor : string
+        Optional color selection for visualization
+    nodecolor : string
+        Optional color selection for visualization
+    Returns
+    -------
+    A visualization of keywords.    
+  """
+
   fig, ax = plt.subplots(figsize=(10, 8))
   pos = nx.spring_layout(graph, k=2)
   # Plot networks
