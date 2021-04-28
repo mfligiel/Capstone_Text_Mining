@@ -23,7 +23,9 @@ INSTALL_REQUIRES = [
       'sklearn',
       'nltk',
       'vaderSentiment',
-      'spacy'
+      'spacy',
+      'gensim',
+      'pyLDAvis'
 ]
 
 setup(name=PACKAGE_NAME,
