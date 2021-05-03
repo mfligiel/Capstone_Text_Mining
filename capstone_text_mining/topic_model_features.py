@@ -18,6 +18,11 @@ import multiprocessing
 import numpy as np
 import pyLDAvis.gensim
 import warnings
+import pandas as pd
+
+# Temporarily adding this - need to clean up later
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 
 # Install corpus    
@@ -47,14 +52,16 @@ def clean_text(text):
 
 
 # Define function to load keywords
-def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extremes_no_above = 1, output_visual = False, chunksize = 2000, iterations = 50, passes = 3, eval_every = None, random_state = 42):
+def topic_features(data, keyword, num_topics, filter_extremes_no_below = 0, filter_extremes_no_above = 1, output_visual = False, chunksize = 2000, iterations = 50, passes = 3, eval_every = None, random_state = 42):
     
     """
     
     Parameters
     ----------
-    data : list object
-        A list of keywords
+    data : dataframe
+        Dataframe with keyword data and target for topic model outputs
+    keyword: string
+        Column in a pandas dataframe with text keyword data
     num_topics : int
         The number of desired topics for the LDA algorithm.
     output_visual: bool
@@ -79,76 +86,77 @@ def topic_features(data, num_topics, filter_extremes_no_below = 0, filter_extrem
     
     """
     
-    # Check if data is a list
-    if isinstance(data, list) == False:
-        print('Data variable must contain a list of keywords!')   
+    # Confirm data is in a pandas dataframe and column is a column in the dataframe
+    assert isinstance(data, pd.core.frame.DataFrame) == True, 'Data must be a pandas dataframe!'          
+    assert isinstance(data[keyword], pd.core.frame.Series) == True, 'Column must be a pandas series!'    
+
+        
+    # Create list of clean keywords
+    keywords_clean = data[keyword].apply(lambda x: clean_text(str(x))).to_list()
+            
+    # Create dictionary
+    dictionary = corpora.Dictionary(keywords_clean)
+    dictionary.filter_extremes(no_below = filter_extremes_no_below, no_above = filter_extremes_no_above)
+            
+    # Convert keywords into document term matrix
+    doc_term_matrix = [dictionary.doc2bow(doc) for doc in keywords_clean]
+            
+    # Define number of processes and workers
+    num_processors = multiprocessing.cpu_count()
+    workers = num_processors - 1  
+            
+    # Run LDA model
+          
+    ldamodel = LdaMulticore(corpus = doc_term_matrix, \
+                                         id2word = dictionary, \
+                                         chunksize = chunksize, \
+                                         eta = 'auto', \
+                                         num_topics = num_topics, \
+                                         iterations = iterations, \
+                                         passes = passes, \
+                                         eval_every = eval_every, \
+                                         workers = workers, \
+                                         random_state = random_state)
+                
+    # Apply LDA Model to document term matrix to assign topic scores
+    lda_documents = ldamodel[doc_term_matrix]
+            
+    # Select highest probability for each document
+    doc_max_topic = [max(prob, key = lambda y:y[1]) for prob in lda_documents]
+            
+    # Select topic number only
+    doc_max_topic = [i[0]+1 for i in doc_max_topic]
+            
+    # Create list of all document topic probabilities
+    doc_topic_probs = [prob for prob in lda_documents]
+            
+    # Create a list of all topic probabilities to unpack nested list and tuples
+    prob_list = []
+    for i in doc_topic_probs:
+        for j in i:
+            prob_list.append(j[1])
+            
+    # Convert to array
+    probs = np.array(prob_list)
+            
+    # Reshape
+    probs = probs.reshape((len(lda_documents), num_topics))
+            
+    # Merge result back to data
+    topic_model_result = probs[:, 1:]
+    topic_model_result = pd.DataFrame(topic_model_result).add_prefix('topic_prob_')
+    data = pd.concat([data, topic_model_result], axis = 1)
+                  
+    if output_visual == False:
+                
+        return(data)
+            
     else:
-        
-        
-        # Create list of clean keywords
-        keywords_clean = list(map(clean_text, data))
-        
-        # Create dictionary
-        dictionary = corpora.Dictionary(keywords_clean)
-        dictionary.filter_extremes(no_below = filter_extremes_no_below, no_above = filter_extremes_no_above)
-        
-        # Convert keywords into document term matrix
-        doc_term_matrix = [dictionary.doc2bow(doc) for doc in keywords_clean]
-        
-        # Define number of processes and workers
-        num_processors = multiprocessing.cpu_count()
-        workers = num_processors - 1  
-        
-        # Run LDA model
-      
-        ldamodel = LdaMulticore(corpus = doc_term_matrix, \
-                                     id2word = dictionary, \
-                                     chunksize = chunksize, \
-                                     eta = 'auto', \
-                                     num_topics = num_topics, \
-                                     iterations = iterations, \
-                                     passes = passes, \
-                                     eval_every = eval_every, \
-                                     workers = workers, \
-                                     random_state = random_state)
-            
-        # Apply LDA Model to document term matrix to assign topic scores
-        lda_documents = ldamodel[doc_term_matrix]
-        
-        # Select highest probability for each document
-        doc_max_topic = [max(prob, key = lambda y:y[1]) for prob in lda_documents]
-        
-        # Select topic number only
-        doc_max_topic = [i[0]+1 for i in doc_max_topic]
-        
-        # Create list of all document topic probabilities
-        doc_topic_probs = [prob for prob in lda_documents]
-        
-        # Create a list of all topic probabilities to unpack nested list and tuples
-        prob_list = []
-        for i in doc_topic_probs:
-                      for j in i:
-                        prob_list.append(j[1])
-        
-        # Convert to array
-        probs = np.array(prob_list)
-        
-        # Reshape
-        probs = probs.reshape((len(lda_documents), num_topics))
-        
-        # Save result
-        topic_model_result = probs[:, 1:]
-              
-        if output_visual == False:
-            
-            return topic_model_result
-        
-        else:
-                       
-            
-            # Suppress warnings from pyLDAvis
-            warnings.filterwarnings('ignore', category = DeprecationWarning)
-            
-            # Create visualization for LDA Model
-            topic_model_visual = pyLDAvis.gensim.prepare(ldamodel, doc_term_matrix, dictionary, sort_topics = False, mds = 'mmds')
-            return pyLDAvis.display(topic_model_visual)
+                                   
+                        
+         # Suppress warnings from pyLDAvis
+         warnings.filterwarnings('ignore', category = DeprecationWarning)
+                            
+         # Create visualization for LDA Model
+         topic_model_visual = pyLDAvis.gensim.prepare(ldamodel, doc_term_matrix, dictionary, sort_topics = False, mds = 'mmds')
+         return pyLDAvis.display(topic_model_visual)
