@@ -15,13 +15,19 @@ def hand_label(data, keyword, label, label_name):
     
     Parameters
     ----------
-    data : list object
-        A list of keywords
+    data : dataframe
+        Dataframe with keyword data and target for topic model outputs
+    keyword: string
+        Column in a pandas dataframe with text keyword data
+    label: string
+        The string or token targeted for the hand labeling function.
+    label_name: string
+        The desired name for the hand labeled column in the output Dataframe.
     
     
     Returns
     -------
-    An list of 1s and 0s with 1 indicating the presence of the desired keyword token.
+    An column of 1s and 0s with 1 indicating the presence of the desired keyword string appended to the original dataframe.
     
     """
     
@@ -36,3 +42,4 @@ def hand_label(data, keyword, label, label_name):
         return 1 if str(label).lower() in str(keyword).lower() else 0
        
     data[label_name] = data[keyword].apply(lambda x: lf_contains(str(x)))
+              
