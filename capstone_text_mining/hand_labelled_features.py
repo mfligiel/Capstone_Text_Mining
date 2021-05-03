@@ -7,9 +7,9 @@ Created on Sat Apr 10 14:35:11 2021
 """
 # Import packages
 from snorkel.labeling import labeling_function
+import pandas as pd
 
-
-def hand_label(data, label):
+def hand_label(data, keyword, label, label_name):
 
     """
     
@@ -25,8 +25,9 @@ def hand_label(data, label):
     
     """
     
-    # Assert data is a list of tokens
-    assert isinstance(data, list) == True, 'Data must be a list of string tokens!'  
+    # Confirm data is in a pandas dataframe and column is a column in the dataframe
+    assert isinstance(data, pd.core.frame.DataFrame) == True, 'Data must be a pandas dataframe!'          
+    assert isinstance(data[keyword], pd.core.frame.Series) == True, 'Column must be a pandas series!'    
     
     # Define labeling function
     @labeling_function()
@@ -34,5 +35,4 @@ def hand_label(data, label):
         # Return label of 1 if i in keyword, otherwise 0
         return 1 if str(label).lower() in str(keyword).lower() else 0
        
-    return list(map(lf_contains, data))
-              
+    data[label_name] = data[keyword].apply(lambda x: lf_contains(str(x)))
