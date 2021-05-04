@@ -14,7 +14,7 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import MultiLabelBinarizer
 
 def model(data, y_var, categorical = False, grid_search = False,\
-          return_model=False, keywordvar = None):
+          keywordvar = None, model_args = None):
     """
     
 
@@ -30,6 +30,8 @@ def model(data, y_var, categorical = False, grid_search = False,\
         DESCRIPTION. The default is False.
     keywordvar :  STRING, optional
         The keyword variable, can be dropped.
+    model_args :  DICT, optional
+        Arguments for the model.
 
     Returns
     -------
@@ -54,6 +56,9 @@ def model(data, y_var, categorical = False, grid_search = False,\
                       refit='balanced_accuracy', verbose=0)
             grid_searchrf.fit(X_train, y_train.astype(int))
         else:
+          if model_args != None:
+            rf = RandomForestClassifier(**model_args)
+          else:
             rf = RandomForestClassifier() #add parameters later
             rf.fit(X_train, y_train)
     else:
@@ -69,6 +74,9 @@ def model(data, y_var, categorical = False, grid_search = False,\
                       refit='r2', verbose=0)
             grid_searchrf.fit(X_train, y_train.astype(int))
         else:
+          if model_args != None:
+            rf = RandomForestRegressor(**model_args)
+          else:
             rf = RandomForestRegressor() #add parameters later
             rf.fit(X_train, y_train) 
     return rf
