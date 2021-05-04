@@ -60,7 +60,7 @@ def model(data, y_var, categorical = False, grid_search = False,\
             rf = RandomForestClassifier(**model_args)
           else:
             rf = RandomForestClassifier() #add parameters later
-            rf.fit(X_train, y_train)
+          rf.fit(X_train, y_train)
     else:
         X_train, X_test, y_train, y_test = train_test_split(\
             data.drop(y_var, axis=1), data[y_var], test_size=0.2, random_state=42)
@@ -78,5 +78,5 @@ def model(data, y_var, categorical = False, grid_search = False,\
             rf = RandomForestRegressor(**model_args)
           else:
             rf = RandomForestRegressor() #add parameters later
-            rf.fit(X_train, y_train) 
+          rf.fit(X_train, y_train) 
     return rf
