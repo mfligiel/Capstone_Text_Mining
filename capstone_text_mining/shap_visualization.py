@@ -1,4 +1,5 @@
 #Shap Function 
+import shap
 
 def shap_visuals(modelname, sample, keyrow):
     """
@@ -18,8 +19,7 @@ def shap_visuals(modelname, sample, keyrow):
     A visualization of the top features in a model analysis    
 
 
-    """
-    import shap
+    """    
     #first, create the random sample set
     if sample >1000:
       print ("It is required to use a sample size of 1,000 or less")
